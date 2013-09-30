@@ -37,6 +37,11 @@ var ia = new IndexedArray(data, "name");
 assert("ia is object", typeof ia, "object");
 assert("ia is IndexedArray", ia instanceof IndexedArray);
 
+// test: crete ia with an empty array
+var ian = new IndexedArray([], "name");
+assert("ian is object", typeof ian, "object");
+assert("ian is IndexedArray", ian instanceof IndexedArray);
+
 // test: sort
 var ret = ia.sort();
 assert("ia min val is Ale", ia.minv, "Ale");
