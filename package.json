@@ -1,0 +1,26 @@
+{
+  "name": "arrayslicer",
+  "version": "1.0.0",
+  "description": "Node.JS module that implements an optimized binary search over a given array of objects",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gabmontes/arrayslicer.git"
+  },
+  "keywords": [
+    "array",
+    "search",
+    "binary",
+    "slice"
+  ],
+  "author": "gabmontes",
+  "bugs": {
+    "url": "https://github.com/gabmontes/arrayslicer/issues"
+  }
+}
