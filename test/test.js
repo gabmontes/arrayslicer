@@ -224,22 +224,22 @@ suite("Get range", function () {
 
   test("with indexes below, below", function () {
     var obj = ia.getRange("Aadvark", "Aaron");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes below, ok", function () {
     var obj = ia.getRange("Aadvark", "Bruce");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes below, not", function () {
     var obj = ia.getRange("Aadvark", "Herman");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes below, above", function () {
     var obj = ia.getRange("Aadvark", "Zak");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes ok, ok", function () {
@@ -249,37 +249,37 @@ suite("Get range", function () {
 
   test("with indexes ok, not", function () {
     var obj = ia.getRange("Bruce", "Herman");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes ok, above", function () {
     var obj = ia.getRange("Bruce", "Zak");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes not, ok", function () {
     var obj = ia.getRange("Herman", "Lars");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes not, not", function () {
     var obj = ia.getRange("Herman", "John");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes not, above", function () {
     var obj = ia.getRange("Herman", "Zak");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes above, above", function () {
     var obj = ia.getRange("Yesi", "Zak");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with inverted indexes", function () {
     var obj = ia.getRange("Gorka", "Bruce");
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
 });
@@ -302,7 +302,7 @@ suite("Get aproximated range", function () {
 
   test("with indexes below, below", function () {
     var obj = ia.getRange("Aadvark", "Aaron", true);
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
   test("with indexes below, ok", function () {
@@ -357,7 +357,7 @@ suite("Get aproximated range", function () {
 
   test("with inverted indexes", function () {
     var obj = ia.getRange("Gorka", "Bruce", true);
-    assert.isNull(obj);
+    assert.deepEqual(obj, []);
   });
 
 });
