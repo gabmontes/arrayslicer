@@ -1,13 +1,14 @@
 {
   "name": "arrayslicer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node.JS module that implements an optimized binary search over a given array of objects",
   "main": "lib/index.js",
   "directories": {
+    "lib": "lib",
     "test": "test"
   },
   "scripts": {
-    "test": "test/test.js"
+    "test": "./node_modules/.bin/mocha --ui tdd"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,9 @@
   "author": "gabmontes",
   "bugs": {
     "url": "https://github.com/gabmontes/arrayslicer/issues"
+  },
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "mocha": "~1.20.1"
   }
 }

@@ -1,207 +1,367 @@
+/**
+ * ArraySlicer tests
+ *
+ * Uses mocha/TDD and chai/assert
+ */
+
+/* global suite, setup, test, teardown */
 
 var IndexedArray = require("../lib/index"),
-    timer = require("./timer"),
-    assert = require("./assert").assert;
+    assert = require("chai").assert;
 
-// test data
+suite("Create", function () {
 
-var data = [
-  { name: "Alf" },
-  { name: "Gabi" },
-  { name: "Lars" },
-  { name: "Fran" },
-  { name: "Juli" },
-  { name: "Gorka" },
-  { name: "Bruce" },
-  { name: "Ale" }
-];
+  // test data
+  var data = [
+    { name: "Alf" },
+    { name: "Gabi" },
+    { name: "Lars" },
+    { name: "Fran" },
+    { name: "Juli" },
+    { name: "Gorka" },
+    { name: "Bruce" },
+    { name: "Ale" }
+  ];
 
-// test: invalid index property
-try {
-    ia = new IndexedArray(data, "invalid");
-    assert("ia allowed invalid index", true);
-} catch (e) {
-    assert("ia creation failed with invalid index", true);
-}
+  test("with invalid index property", function () {
+    var getIA = function () {
+      new IndexedArray(data, "invalid");
+    };
+    assert.throw(getIA, Error, "Invalid index");
+  });
 
-// test: invalid data
-try {
-    ia = new IndexedArray("no-data", "invalid");
-    assert("ia allowed invalid data", true);
-} catch (e) {
-    assert("ia creation failed with invalid data", true);
-}
+  test("with invalid data", function () {
+    var getIA = function () {
+      new IndexedArray("no-data", "invalid");
+    };
+    assert.throw(getIA, Error, "Invalid data");
+  });
 
-// test: create ia
-var ia = new IndexedArray(data, "name");
-assert("ia is object", typeof ia, "object");
-assert("ia is IndexedArray", ia instanceof IndexedArray);
+  test("IA from data", function () {
+    var ia = new IndexedArray(data, "name");
+    assert.typeOf(ia, "object");
+    assert.instanceOf(ia, IndexedArray);
+  });
 
-// test: crete ia with an empty array
-var ian = new IndexedArray([], "name");
-assert("ian is object", typeof ian, "object");
-assert("ian is IndexedArray", ian instanceof IndexedArray);
+  test("IA from an empty array", function () {
+    var ia = new IndexedArray([], "name");
+    assert.typeOf(ia, "object");
+    assert.instanceOf(ia, IndexedArray);
+  });
 
-// test: sort
-var ret = ia.sort();
-assert("ia min val is Ale", ia.minv, "Ale");
-assert("ia mxn val is Lars", ia.maxv, "Lars");
-assert("ia sort can be chained", ret, ia);
+});
 
-// test: find one
-var one = "Gabi",
-    obj = ia.get(one);
-assert("ia get retrieved " + one, obj.name, one);
+suite("Sort array", function () {
 
-// test: fine another
-one = "Juli";
-obj = ia.get(one);
-assert("ia get retrieved " + one, obj.name, one);
+  // test data
+  var data = [
+    { name: "Alf" },
+    { name: "Gabi" },
+    { name: "Lars" },
+    { name: "Fran" },
+    { name: "Juli" },
+    { name: "Gorka" },
+    { name: "Bruce" },
+    { name: "Ale" }
+  ];
+  var ia = new IndexedArray(data, "name");
 
-// test: find the first again
-one = "Gabi";
-obj = ia.get(one);
-assert("ia get retrieved " + one + " again", obj.name, one);
+  test("of unsorted data", function () {
+    var ret = ia.sort();
+    assert.strictEqual(ia.minv, "Ale");
+    assert.strictEqual(ia.maxv, "Lars");
+    assert.instanceOf(ret, IndexedArray);
+  });
 
-// test: find lower boundary
-one = "Ale";
-obj = ia.get(one);
-assert("ia get retrieved " + one, obj.name, one);
+});
 
-// test: find higher boundary
-one = "Lars";
-obj = ia.get(one);
-assert("ia get retrieved " + one, obj.name, one);
+suite("Get and fetch", function () {
 
-// test: fetch position
-one = "Bruce";
-ret = ia.fetch(one);
-assert("ia fetched " + one, ret.last, 2);
+  // test data
+  var data = [
+    { name: "Ale" },
+    { name: "Alf" },
+    { name: "Bruce" },
+    { name: "Fran" },
+    { name: "Gabi" },
+    { name: "Gorka" },
+    { name: "Juli" },
+    { name: "Lars" }
+  ];
+  var ia = new IndexedArray(data, "name");
 
-// test: chain fetch and get
-one = "Bruce";
-obj = ia.fetch(one).get();
-assert("ia fetch.get retrieved " + one, obj.name, one);
+  test("one value", function () {
+    var one = "Gabi",
+        obj = ia.get(one);
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: search non existent
-one = "Herman";
-obj = ia.get(one);
-assert("ia could not get " + one, !obj);
+  test("another", function () {
+    var one = "Juli",
+        obj = ia.get(one);
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: get lower nearest non-match within range
-obj = ia.get(one, true);
-assert("ia got lower than " + one, obj.name, "Gorka");
+  test("the first again", function () {
+    var one = "Gabi",
+        obj = ia.get(one);
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: get lower nearest non-match within range not from cache
-one = "Fer";
-obj = ia.get(one, true);
-assert("ia got lower than " + one, obj.name, "Bruce");
+  test("lower boundary", function () {
+    var one = "Ale",
+        obj = ia.get(one);
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: search non existent again
-one = "Herman";
-obj = ia.get(one);
-assert("ia could not get " + one + " again", !obj);
+  test("higher boundary", function () {
+    var one = "Lars",
+        obj = ia.get(one);
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: get lower nearest within range again
-obj = ia.get(one, true);
-assert("ia got lower than " + one + " again", obj.name, "Gorka");
+  test("just position", function () {
+    var one = "Bruce",
+        ret = ia.fetch(one);
+    assert.strictEqual(ret.last, 2);
+  });
 
-// test: search out of range lower
-one = "Aaron";
-obj = ia.get(one);
-assert("ia could not get " + one, !obj);
+  test("chained", function () {
+    var one = "Bruce",
+        obj = ia.fetch(one).get();
+    assert.strictEqual(obj.name, one);
+  });
 
-// test: get lower nearest oor-
-obj = ia.get(one, true);
-assert("ia could not get lower than " + one, !obj);
+  test("non existent value", function () {
+    var one = "Herman",
+        obj = ia.get(one);
+    assert.isNull(obj);
+  });
 
-// test: search out of range highrt
-one = "Zak";
-obj = ia.get(one);
-assert("ia could not get " + one, !obj);
+  test("lower nearest non-match within range", function () {
+    var one = "Herman",
+        obj = ia.get(one, true);
+    assert.strictEqual(obj.name, "Gorka");
+  });
 
-// test: get lower nearest oor+
-obj = ia.get(one, true);
-assert("ia got lower than " + one, obj.name, "Lars");
+  test("lower nearest non-match within range not from cache", function () {
+    var one = "Fer",
+        obj = ia.get(one, true);
+    assert.strictEqual(obj.name, "Bruce");
+  });
+
+  test("non existent again", function () {
+    var one = "Herman",
+        obj = ia.get(one);
+    assert.isNull(obj);
+  });
+
+  test("lower nearest within range again", function () {
+    var one = "Herman",
+        obj = ia.get(one, true);
+    assert.strictEqual(obj.name, "Gorka");
+  });
+
+  test("out of range lower", function () {
+    var one = "Aaron",
+        obj = ia.get(one);
+    assert.isNull(obj);
+  });
+
+  test("lower nearest oor-", function () {
+    var one = "Aaron",
+        obj = ia.get(one, true);
+    assert.isNull(obj);
+  });
+
+  test("out of range higher", function () {
+    var one = "Zak",
+        obj = ia.get(one);
+    assert.isNull(obj);
+  });
+
+  test("lower nearest oor+", function () {
+    var one = "Zak",
+        obj = ia.get(one, true);
+    assert.strictEqual(obj.name, "Lars");
+  });
+
+});
+
+suite("Get with numeric indexes", function () {
+
+  // test data
+  var data = [
+    { num: 1 },
+    { num: 2 },
+    { num: 5 }
+  ];
+  var ia = new IndexedArray(data, "num");
+
+  test("one value", function () {
+    var val = 2,
+        obj = ia.get(val);
+    assert.strictEqual(obj.num, val);
+  });
+
+});
 
 // test: slice including values wr, oor--, oor-wr, wroor+, oor++
-obj = ia.getRange("Aadvark", "Aaron"); // below, below
-assert("ia could not get range", !obj);
+suite("Get range", function () {
 
-obj = ia.getRange("Aadvark", "Bruce"); // below, ok
-assert("ia could not get range", !obj);
+  // test data
+  var data = [
+    { name: "Ale" },
+    { name: "Alf" },
+    { name: "Bruce" },
+    { name: "Fran" },
+    { name: "Gabi" },
+    { name: "Gorka" },
+    { name: "Juli" },
+    { name: "Lars" }
+  ];
+  var ia = new IndexedArray(data, "name");
 
-obj = ia.getRange("Aadvark", "Herman"); // below, not
-assert("ia could not get range", !obj);
+  test("with indexes below, below", function () {
+    var obj = ia.getRange("Aadvark", "Aaron");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Aadvark", "Zak"); // below, above
-assert("ia could not get range", !obj);
+  test("with indexes below, ok", function () {
+    var obj = ia.getRange("Aadvark", "Bruce");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Bruce", "Gorka"); // ok, ok
-assert("ia got range within data", obj.length, 4);
+  test("with indexes below, not", function () {
+    var obj = ia.getRange("Aadvark", "Herman");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Bruce", "Herman"); // ok, not
-assert("ia could not get range", !obj);
+  test("with indexes below, above", function () {
+    var obj = ia.getRange("Aadvark", "Zak");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Bruce", "Zak"); // ok, above
-assert("ia could not get range", !obj);
+  test("with indexes ok, ok", function () {
+    var obj = ia.getRange("Bruce", "Gorka");
+    assert.strictEqual(obj.length, 4);
+  });
 
-obj = ia.getRange("Herman", "Lars"); // not, ok
-assert("ia could not get range", !obj);
+  test("with indexes ok, not", function () {
+    var obj = ia.getRange("Bruce", "Herman");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Herman", "John"); // not, not
-assert("ia could not get range", !obj);
+  test("with indexes ok, above", function () {
+    var obj = ia.getRange("Bruce", "Zak");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Herman", "Zak"); // not, above
-assert("ia could not get range", !obj);
+  test("with indexes not, ok", function () {
+    var obj = ia.getRange("Herman", "Lars");
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Yesi", "Zak"); // above, above
-assert("ia could not get range", !obj);
+  test("with indexes not, not", function () {
+    var obj = ia.getRange("Herman", "John");
+    assert.isNull(obj);
+  });
+
+  test("with indexes not, above", function () {
+    var obj = ia.getRange("Herman", "Zak");
+    assert.isNull(obj);
+  });
+
+  test("with indexes above, above", function () {
+    var obj = ia.getRange("Yesi", "Zak");
+    assert.isNull(obj);
+  });
+
+  test("with inverted indexes", function () {
+    var obj = ia.getRange("Gorka", "Bruce");
+    assert.isNull(obj);
+  });
+
+});
 
 // test: slice including lower nearest wr, oor--, oor-wr, wroor+, oor++
-obj = ia.getRange("Aadvark", "Aaron", true); // below, below
-assert("ia could not get range bb", !obj);
+suite("Get aproximated range", function () {
 
-obj = ia.getRange("Aadvark", "Bruce", true); // below, ok
-assert("ia got range bo", obj.length, 3);
+  // test data
+  var data = [
+    { name: "Ale" },
+    { name: "Alf" },
+    { name: "Bruce" },
+    { name: "Fran" },
+    { name: "Gabi" },
+    { name: "Gorka" },
+    { name: "Juli" },
+    { name: "Lars" }
+  ];
+  var ia = new IndexedArray(data, "name");
 
-obj = ia.getRange("Aadvark", "Herman", true); // below, not
-assert("ia got range nb", obj.length, 6);
+  test("with indexes below, below", function () {
+    var obj = ia.getRange("Aadvark", "Aaron", true);
+    assert.isNull(obj);
+  });
 
-obj = ia.getRange("Aadvark", "Zak", true); // below, above
-assert("ia got range ba", obj.length, 8);
+  test("with indexes below, ok", function () {
+    var obj = ia.getRange("Aadvark", "Bruce", true);
+    assert.strictEqual(obj.length, 3);
+  });
 
-obj = ia.getRange("Bruce", "Gorka", true); // ok, ok
-assert("ia got range oo", obj.length, 4);
+  test("with indexes below, not", function () {
+    var obj = ia.getRange("Aadvark", "Herman", true);
+    assert.strictEqual(obj.length, 6);
+  });
 
-obj = ia.getRange("Bruce", "Herman", true); // ok, not
-assert("ia got range on", obj.length, 4);
+  test("with indexes below, above", function () {
+    var obj = ia.getRange("Aadvark", "Zak", true);
+    assert.strictEqual(obj.length, 8);
+  });
 
-obj = ia.getRange("Bruce", "Zak", true); // ok, above
-assert("ia got range oa", obj.length, 6);
+  test("with indexes ok, ok", function () {
+    var obj = ia.getRange("Bruce", "Gorka", true);
+    assert.strictEqual(obj.length, 4);
+  });
 
-obj = ia.getRange("Herman", "Juli", true); // not, ok
-assert("ia got range no", obj.length, 2);
+  test("with indexes ok, not", function () {
+    var obj = ia.getRange("Bruce", "Herman", true);
+    assert.strictEqual(obj.length, 4);
+  });
 
-obj = ia.getRange("Herman", "John", true); // not, not
-assert("ia got range nn", obj.length, 1);
+  test("with indexes ok, above", function () {
+    var obj = ia.getRange("Bruce", "Zak", true);
+    assert.strictEqual(obj.length, 6);
+  });
 
-obj = ia.getRange("Herman", "Zak", true); // not, above
-assert("ia got range na", obj.length, 3);
+  test("with indexes not, ok", function () {
+    var obj = ia.getRange("Herman", "Juli", true);
+    assert.strictEqual(obj.length, 2);
+  });
 
-obj = ia.getRange("Yesi", "Zak", true); // above, above
-assert("ia got range aa", obj.length, 1);
+  test("with indexes not, not", function () {
+    var obj = ia.getRange("Herman", "John", true);
+    assert.strictEqual(obj.length, 1);
+  });
 
-// test: slice with inverted indexes
-obj = ia.getRange("Gorka", "Bruce", true);
-assert("ia could not get range", !obj);
+  test("with indexes not, above", function () {
+    var obj = ia.getRange("Herman", "Zak", true);
+    assert.strictEqual(obj.length, 3);
+  });
 
-// test: find with numeric index
-ia = new IndexedArray([{ num: 1 }, { num: 2 }, { num: 5 }], "num");
-var val = 2;
-obj = ia.get(val);
-assert("ia get retrieved " + val, obj.num, val);
+  test("with indexes above, above", function () {
+    var obj = ia.getRange("Yesi", "Zak", true);
+    assert.strictEqual(obj.length, 1);
+  });
 
-// test: custom compare function
+  test("with inverted indexes", function () {
+    var obj = ia.getRange("Gorka", "Bruce", true);
+    assert.isNull(obj);
+  });
 
-// test: custom search function
+});
+
+// TODO:
+//   test custom compare function
+//   test custom search function
