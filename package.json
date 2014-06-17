@@ -1,6 +1,6 @@
 {
   "name": "arrayslicer",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Node.JS module that implements an optimized binary search over a given array of objects",
   "main": "lib/index.js",
   "directories": {
