@@ -9,7 +9,7 @@ var IndexedArray = require("arrayslicer");
 
 var ia = new IndexedArray([{num: 1}, {num: 2}, {num: 5}], "num");
 
-ia.fetch(2); // ia.last is set to 1
+ia.fetch(2); // ia.cursor is set to 1
 ia.get(1); // -> {num: 1}
 ia.getRange(2, 5); // -> [{num: 2}, {num: 5}]
 ```

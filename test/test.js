@@ -123,7 +123,7 @@ suite("Get and fetch", function () {
   test("just position", function () {
     var one = "Bruce",
         ret = ia.fetch(one);
-    assert.strictEqual(ret.last, 2);
+    assert.strictEqual(ret.cursor, 2);
   });
 
   test("chained", function () {
