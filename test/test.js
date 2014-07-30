@@ -48,7 +48,6 @@ suite("Create", function () {
     assert.typeOf(ia, "object");
     assert.instanceOf(ia, IndexedArray);
   });
-
 });
 
 suite("Sort array", function () {
@@ -72,7 +71,6 @@ suite("Sort array", function () {
     assert.strictEqual(ia.maxv, "Lars");
     assert.instanceOf(ret, IndexedArray);
   });
-
 });
 
 suite("Get and fetch", function () {
@@ -104,20 +102,30 @@ suite("Get and fetch", function () {
 
   test("the first again", function () {
     var one = "Gabi",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.strictEqual(obj.name, one);
+    assert.strictEqual(ret.cursor, 4);
+    assert.isNull(ret.nextlow);
+    assert.isNull(ret.nexthigh);
   });
 
   test("lower boundary", function () {
     var one = "Ale",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.strictEqual(obj.name, one);
+    assert.isNull(ret.nextlow);
+    assert.isNull(ret.nexthigh);
   });
 
   test("higher boundary", function () {
     var one = "Lars",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.strictEqual(obj.name, one);
+    assert.isNull(ret.nextlow);
+    assert.isNull(ret.nexthigh);
   });
 
   test("just position", function () {
@@ -126,7 +134,7 @@ suite("Get and fetch", function () {
     assert.strictEqual(ret.cursor, 2);
   });
 
-  test("chained", function () {
+  test("chaining fetch and get", function () {
     var one = "Bruce",
         obj = ia.fetch(one).get();
     assert.strictEqual(obj.name, one);
@@ -134,20 +142,12 @@ suite("Get and fetch", function () {
 
   test("non existent value", function () {
     var one = "Herman",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.isNull(obj);
-  });
-
-  test("lower nearest non-match within range", function () {
-    var one = "Herman",
-        obj = ia.get(one, true);
-    assert.strictEqual(obj.name, "Gorka");
-  });
-
-  test("lower nearest non-match within range not from cache", function () {
-    var one = "Fer",
-        obj = ia.get(one, true);
-    assert.strictEqual(obj.name, "Bruce");
+    assert.isNull(ret.cursor);
+    assert.strictEqual(ret.nextlow, 5);
+    assert.strictEqual(ret.nexthigh, 6);
   });
 
   test("non existent again", function () {
@@ -156,36 +156,35 @@ suite("Get and fetch", function () {
     assert.isNull(obj);
   });
 
-  test("lower nearest within range again", function () {
-    var one = "Herman",
-        obj = ia.get(one, true);
-    assert.strictEqual(obj.name, "Gorka");
+  test("non other existent again", function () {
+    var one = "Gonza",
+        ret = ia.fetch(one),
+        obj = ia.get();
+    assert.isNull(obj);
+    assert.isNull(ret.cursor);
+    assert.strictEqual(ret.nextlow, 4);
+    assert.strictEqual(ret.nexthigh, 5);
   });
 
   test("out of range lower", function () {
     var one = "Aaron",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.isNull(obj);
-  });
-
-  test("lower nearest oor-", function () {
-    var one = "Aaron",
-        obj = ia.get(one, true);
-    assert.isNull(obj);
+    assert.isNull(ret.cursor);
+    assert.isNull(ret.nextlow);
+    assert.strictEqual(ret.nexthigh, 0);
   });
 
   test("out of range higher", function () {
     var one = "Zak",
-        obj = ia.get(one);
+        ret = ia.fetch(one),
+        obj = ia.get();
     assert.isNull(obj);
+    assert.isNull(ret.cursor);
+    assert.strictEqual(ret.nextlow, 7);
+    assert.isNull(ret.nexthigh);
   });
-
-  test("lower nearest oor+", function () {
-    var one = "Zak",
-        obj = ia.get(one, true);
-    assert.strictEqual(obj.name, "Lars");
-  });
-
 });
 
 suite("Get with numeric indexes", function () {
@@ -203,10 +202,8 @@ suite("Get with numeric indexes", function () {
         obj = ia.get(val);
     assert.strictEqual(obj.num, val);
   });
-
 });
 
-// test: slice including values wr, oor--, oor-wr, wroor+, oor++
 suite("Get range", function () {
 
   // test data
@@ -224,142 +221,81 @@ suite("Get range", function () {
 
   test("with indexes below, below", function () {
     var obj = ia.getRange("Aadvark", "Aaron");
-    assert.deepEqual(obj, []);
+    assert.isArray(obj);
+    assert.lengthOf(obj, 0);
   });
 
-  test("with indexes below, ok", function () {
+  test("with indexes below, within", function () {
     var obj = ia.getRange("Aadvark", "Bruce");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 3);
+    assert.deepEqual(obj, data.slice(0, 3));
   });
 
   test("with indexes below, not", function () {
     var obj = ia.getRange("Aadvark", "Herman");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 6);
+    assert.deepEqual(obj, data.slice(0, 6));
   });
 
   test("with indexes below, above", function () {
     var obj = ia.getRange("Aadvark", "Zak");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 8);
+    assert.deepEqual(obj, data);
   });
 
-  test("with indexes ok, ok", function () {
+  test("with indexes within, within", function () {
     var obj = ia.getRange("Bruce", "Gorka");
-    assert.strictEqual(obj.length, 4);
+    assert.lengthOf(obj, 4);
+    assert.deepEqual(obj, data.slice(2, 6));
   });
 
-  test("with indexes ok, not", function () {
+  test("with indexes within, not", function () {
     var obj = ia.getRange("Bruce", "Herman");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 4);
+    assert.deepEqual(obj, data.slice(2, 6));
   });
 
-  test("with indexes ok, above", function () {
-    var obj = ia.getRange("Bruce", "Zak");
-    assert.deepEqual(obj, []);
-  });
-
-  test("with indexes not, ok", function () {
+  test("with indexes not, within", function () {
     var obj = ia.getRange("Herman", "Lars");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 2);
+    assert.deepEqual(obj, data.slice(6, 8));
+  });
+
+  test("with indexes not, not", function () {
+    var obj = ia.getRange("Bryan", "John");
+    assert.lengthOf(obj, 3);
+    assert.deepEqual(obj, data.slice(3, 6));
   });
 
   test("with indexes not, not", function () {
     var obj = ia.getRange("Herman", "John");
-    assert.deepEqual(obj, []);
+    assert.isArray(obj);
+    assert.lengthOf(obj, 0);
+  });
+
+  test("with indexes within, above", function () {
+    var obj = ia.getRange("Bruce", "Zak");
+    assert.lengthOf(obj, 6);
+    assert.deepEqual(obj, data.slice(2, 8));
   });
 
   test("with indexes not, above", function () {
     var obj = ia.getRange("Herman", "Zak");
-    assert.deepEqual(obj, []);
+    assert.lengthOf(obj, 2);
+    assert.deepEqual(obj, data.slice(6, 8));
   });
 
   test("with indexes above, above", function () {
     var obj = ia.getRange("Yesi", "Zak");
-    assert.deepEqual(obj, []);
+    assert.isArray(obj);
+    assert.lengthOf(obj, 0);
   });
 
   test("with inverted indexes", function () {
     var obj = ia.getRange("Gorka", "Bruce");
-    assert.deepEqual(obj, []);
+    assert.isArray(obj);
+    assert.lengthOf(obj, 0);
   });
-
-});
-
-// test: slice including lower nearest wr, oor--, oor-wr, wroor+, oor++
-suite("Get aproximated range", function () {
-
-  // test data
-  var data = [
-    { name: "Ale" },
-    { name: "Alf" },
-    { name: "Bruce" },
-    { name: "Fran" },
-    { name: "Gabi" },
-    { name: "Gorka" },
-    { name: "Juli" },
-    { name: "Lars" }
-  ];
-  var ia = new IndexedArray(data, "name");
-
-  test("with indexes below, below", function () {
-    var obj = ia.getRange("Aadvark", "Aaron", true);
-    assert.deepEqual(obj, []);
-  });
-
-  test("with indexes below, ok", function () {
-    var obj = ia.getRange("Aadvark", "Bruce", true);
-    assert.strictEqual(obj.length, 3);
-  });
-
-  test("with indexes below, not", function () {
-    var obj = ia.getRange("Aadvark", "Herman", true);
-    assert.strictEqual(obj.length, 6);
-  });
-
-  test("with indexes below, above", function () {
-    var obj = ia.getRange("Aadvark", "Zak", true);
-    assert.strictEqual(obj.length, 8);
-  });
-
-  test("with indexes ok, ok", function () {
-    var obj = ia.getRange("Bruce", "Gorka", true);
-    assert.strictEqual(obj.length, 4);
-  });
-
-  test("with indexes ok, not", function () {
-    var obj = ia.getRange("Bruce", "Herman", true);
-    assert.strictEqual(obj.length, 4);
-  });
-
-  test("with indexes ok, above", function () {
-    var obj = ia.getRange("Bruce", "Zak", true);
-    assert.strictEqual(obj.length, 6);
-  });
-
-  test("with indexes not, ok", function () {
-    var obj = ia.getRange("Herman", "Juli", true);
-    assert.strictEqual(obj.length, 2);
-  });
-
-  test("with indexes not, not", function () {
-    var obj = ia.getRange("Herman", "John", true);
-    assert.strictEqual(obj.length, 1);
-  });
-
-  test("with indexes not, above", function () {
-    var obj = ia.getRange("Herman", "Zak", true);
-    assert.strictEqual(obj.length, 3);
-  });
-
-  test("with indexes above, above", function () {
-    var obj = ia.getRange("Yesi", "Zak", true);
-    assert.strictEqual(obj.length, 1);
-  });
-
-  test("with inverted indexes", function () {
-    var obj = ia.getRange("Gorka", "Bruce", true);
-    assert.deepEqual(obj, []);
-  });
-
 });
 
 // TODO:

@@ -30,23 +30,21 @@ Creates a new `IndexedArray` object based on `array` and indexed by the property
 
 Sort the `IndexedArray` by its index property. This is needed to ensure the values are retrieved properly.
 
-### IndexedArray.fetch(value, orprev)
+### IndexedArray.fetch(value)
 
-Sets the internal pointer of the `IndexedArray` to the element with index equal `value`.
+Sets the internal pointer of the `IndexedArray`, called `cursor`, to the element with index equal `value`.
 
-If `orprev` is `true` and there are no elements matching `value`, the element with the lower nearest index to `value` is fetch.
+If there are no matching elements, the properties `nexthigh` and `nextlow` are set to the nearest indexes to `value`.
 
-### IndexedArray.get(value, orprev)
+### IndexedArray.get(value)
 
 Gets the element with index equal `value`.
 
-If `orprev` is `true` and there are no elements matching `value`, the element with the lower nearest index to `value` is retrieved.
+If there are no matching elements, the function will return `null`.
 
-### IndexedArray.get(begin, end, aprox)
+### IndexedArray.get(begin, end)
 
-Returns an array containing all the elements with indexes between `begin` and `end`.
-
-If `aprox` is `true`, the boundaries not found will default to the lower entry. If the begin boundary falls out of range, it defaults to the beginning.
+Returns an array containing all the elements within `begin` and `end`, including both values if exact matches are found within the data.
 
 ### IndexedArray.setCompare(fn)
 
