@@ -225,6 +225,12 @@ suite("Get range", function () {
     assert.lengthOf(obj, 0);
   });
 
+  test("with indexes below, past first", function () {
+    var obj = ia.getRange("Alan", "Alex");
+    assert.lengthOf(obj, 1);
+    assert.deepEqual(obj, data.slice(0, 1));
+  });
+
   test("with indexes below, within", function () {
     var obj = ia.getRange("Aadvark", "Bruce");
     assert.lengthOf(obj, 3);
@@ -283,6 +289,12 @@ suite("Get range", function () {
     var obj = ia.getRange("Herman", "Zak");
     assert.lengthOf(obj, 2);
     assert.deepEqual(obj, data.slice(6, 8));
+  });
+
+  test("with indexes before last, above", function () {
+    var obj = ia.getRange("Ken", "Marcos");
+    assert.lengthOf(obj, 1);
+    assert.deepEqual(obj, data.slice(7, 8));
   });
 
   test("with indexes above, above", function () {
