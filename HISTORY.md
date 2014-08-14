@@ -1,3 +1,7 @@
+##### v1.2.2 - aug 14 2014
+
+- Fixed bug on internal cache population.
+
 ##### v1.2.1 - jul 31 2014
 
 - Fixed bug when getting a range around the last element.
