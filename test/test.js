@@ -310,6 +310,19 @@ suite("Get range", function () {
   });
 });
 
+suite("Edge cases", function () {
+
+  var ia = new IndexedArray([], "prop");
+
+  test("fetch over an empty array", function () {
+    var ret = ia.fetch("val");
+    assert.strictEqual(ret, ia);
+    assert.isNull(ret.cursor);
+    assert.isNull(ret.nextlow);
+    assert.isNull(ret.nexthigh);
+  });
+});
+
 // TODO:
 //   test custom compare function
 //   test custom search function
