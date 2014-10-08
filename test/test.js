@@ -191,15 +191,54 @@ suite("Get with numeric indexes", function () {
 
   // test data
   var data = [
-    { num: 1 },
-    { num: 2 },
-    { num: 5 }
+    { num: 10 },
+    { num: 15 },
+    { num: 25 },
+    { num: 45 },
+    { num: 60 },
+    { num: 85 }
   ];
   var ia = new IndexedArray(data, "num");
 
-  test("one value", function () {
-    var val = 2,
+  test("first", function () {
+    var val = 10,
         obj = ia.get(val);
+    assert.isObject(obj);
+    assert.strictEqual(obj.num, val);
+  });
+
+  test("other", function () {
+    var val = 60,
+        obj = ia.get(val);
+    assert.isObject(obj);
+    assert.strictEqual(obj.num, val);
+  });
+
+  test("other", function () {
+    var val = 25,
+        obj = ia.get(val);
+    assert.isObject(obj);
+    assert.strictEqual(obj.num, val);
+  });
+
+  test("other", function () {
+    var val = 15,
+        obj = ia.get(val);
+    assert.isObject(obj);
+    assert.strictEqual(obj.num, val);
+  });
+
+  test("other", function () {
+    var val = 45,
+        obj = ia.get(val);
+    assert.isObject(obj);
+    assert.strictEqual(obj.num, val);
+  });
+
+  test("last", function () {
+    var val = 85,
+        obj = ia.get(val);
+    assert.isObject(obj);
     assert.strictEqual(obj.num, val);
   });
 });
@@ -255,6 +294,12 @@ suite("Get range", function () {
     assert.deepEqual(obj, data.slice(2, 6));
   });
 
+  test("with indexes within, within again", function () {
+    var obj = ia.getRange("Bruce", "Gorka");
+    assert.lengthOf(obj, 4);
+    assert.deepEqual(obj, data.slice(2, 6));
+  });
+
   test("with indexes within, not", function () {
     var obj = ia.getRange("Bruce", "Herman");
     assert.lengthOf(obj, 4);
@@ -268,6 +313,12 @@ suite("Get range", function () {
   });
 
   test("with indexes not, not", function () {
+    var obj = ia.getRange("Bryan", "John");
+    assert.lengthOf(obj, 3);
+    assert.deepEqual(obj, data.slice(3, 6));
+  });
+
+  test("with indexes not, not again", function () {
     var obj = ia.getRange("Bryan", "John");
     assert.lengthOf(obj, 3);
     assert.deepEqual(obj, data.slice(3, 6));
