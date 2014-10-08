@@ -1,3 +1,7 @@
+##### v1.2.3 - oct 08 2014
+
+- Fixed bug when searching for numeric indexes.
+
 ##### v1.2.2 - aug 14 2014
 
 - Fixed bug on internal cache population.
